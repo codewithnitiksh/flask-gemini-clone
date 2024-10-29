@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sign up / Login Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDlgM2LjpmgHUvSAGLL1wWP5UuvZxtA9s0",
+            authDomain: "chatter-13894.firebaseapp.com",
+            projectId: "chatter-13894",
+            storageBucket: "chatter-13894.appspot.com",
+            messagingSenderId: "531216363751",
+            appId: "1:531216363751:web:54bbb0453d7f1edecbf242",
+            measurementId: "G-VXWM588QCG"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Handle Sign Up
+        async function signUp(event) {
+            event.preventDefault();
+            const email = document.querySelector('input[name="email"]').value;
+            const password = document.querySelector('input[name="pswd"]').value;
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const uid = userCredential.user.uid;
+                // console.log('User signed up:', uid);
+
+                // Set the UID as a permanent cookie
+                document.cookie = `uid=${uid}; max-age=${365 * 24 * 60 * 60}; path=/;`;
+
+                // Redirect or show success message
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Error during sign up:', error.message);
+            }
+        }
+
+        // Handle Login
+        async function login(event) {
+            event.preventDefault();
+            const email = document.querySelector('input[name="loginemail"]').value;
+            const password = document.querySelector('input[name="loginpswd"]').value;
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const uid = userCredential.user.uid;
+                //console.log('User logged in:', uid);
+
+                // Set the UID as a permanent cookie
+                document.cookie = `uid=${uid}; max-age=${365 * 24 * 60 * 60}; path=/;`;
+
+                // Redirect or show success message
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Error during login:', error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.signup form').addEventListener('submit', signUp);
+            document.querySelector('.login form').addEventListener('submit', login);
+        });
+    </script>
+
+</head>
+
+<body translate="no">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&amp;display=swap" rel="stylesheet">
+
+    <div class="main">
+        <input type="checkbox" id="chk" aria-hidden="true">
+
+        <div class="signup">
+            <form>
+                <label for="chk" aria-hidden="true">Sign up</label>
+                <input type="text" name="txt" placeholder="User name" required="">
+                <input type="email" name="email" placeholder="Email" required="">
+                <input type="password" name="pswd" placeholder="Password" required="">
+                <button>Sign up</button>
+            </form>
+        </div>
+
+        <div class="login">
+            <form>
+                <label for="chk" aria-hidden="true">Login</label>
+                <input type="email" name="loginemail" placeholder="Email" required="">
+                <input type="password" name="loginpswd" placeholder="Password" required="">
+                <button>Login</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

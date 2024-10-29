@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="shortcut icon" href="https://instagram.fdel25-3.fna.fbcdn.net/v/t51.2885-19/439319988_801727825180238_7413382533969077460_n.jpg?stp=dst-jpg_s320x320&_nc_ht=instagram.fdel25-3.fna.fbcdn.net&_nc_cat=102&_nc_ohc=-0qHRbm-QR8Q7kNvgEkDXqq&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AYAbLSR2aetwX0UgsY-A-wEr6-Y27PTWpzVEM0thEtU5gw&oe=66DB7AC3&_nc_sid=8b3546" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
+    <style>
+        * {
+            scrollbar-width: none;
+        }
+
+        .right2 {
+            display: none;
+        }
+
+        nav {
+            height: 50px;
+            background-color: #202123;
+            /* Background color for navbar */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .icon {
+            position: absolute;
+            left: 10px;
+            /* Adjust position from left */
+            font-size: 24px;
+            /* Adjust icon size */
+            color: white;
+            cursor: pointer;
+        }
+
+        .text {
+            color: white;
+            font-size: 25px;
+            /* Adjust font size */
+            text-align: center;
+        }
+
+        @media(max-width:1000px) {
+            #leftBar {
+                display: none;
+                width: 200px;
+                position: fixed;
+                left: 0px;
+                height: 100vh;
+                z-index: 999;
+            }
+
+            .itemsrow {
+                flex-direction: column;
+                width: 100%;
+                overflow-y: scroll;
+            }
+
+            #InputCont {
+                width: 100%;
+                padding: 5px;
+                margin: 5px;
+            }
+
+            #sendButton2 {
+                left: 2px;
+                padding-left: 18px;
+                padding-right: 10px;
+            }
+
+            #sendButton {
+                left: 2px;
+                padding-left: 18px;
+                padding-right: 10px;
+            }
+
+            #questionInputMain {
+                margin-left: 5px;
+            }
+
+            #ChatContainer {
+                width: 100%;
+            }
+        }
+
+        @media(min-width:1000px) {
+            .examples button {
+                width: 30vh;
+            }
+
+            .itemsrow {
+                justify-content: center;
+            }
+
+            #ChatContainer {
+                width: 70vw;
+            }
+
+            .right2 {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .cap button {
+                width: 30vh;
+            }
+
+            .lim button {
+                width: 30vh;
+            }
+
+            .box .box1 {
+                width: 40%;
+            }
+        }
+    </style>
+    <!-- Add Font Awesome CDN for icon usage -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <title>Chat with Google Gemini</title>
+</head>
+
+<body class="bg-chatblack-50">
+    <nav>
+        <div class="icon">
+            <i id="toggleMenuIcon" class="fas fa-bars"></i>
+        </div>
+        <p class="text text-center text-4xl font-bold my-10">Gemini</p>
+        <p style="color: white;position: absolute;margin-top: 35px;font-size: x-small;">created by <a
+                href="https://www.instagram.com/nitikshh/">nitiksh</a></p>
+    </nav>
+    <!-- JavaScript for toggling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleMenuIcon = document.querySelector('.icon');
+            const leftBar = document.getElementById('leftBar');
+
+            toggleMenuIcon.addEventListener('click', () => {
+                if (leftBar.style.display === 'none' || leftBar.style.display === '') {
+                    leftBar.style.display = 'block';
+                } else {
+                    leftBar.style.display = 'none';
+                }
+            });
+        });
+    </script>
+    <div style="height: calc(100vh - 50px);" class="flex text-white">
+        <div id="leftBar" class="left bg-[#202123] w-2/12">
+
+            <button id="newChatButton" style="align-items: center; justify-content: center; width: 90%;"
+                class="w-[90%] py-2 m-2 px-2 space-x-2 border-white border rounded-md flex  justify-start items-center hover:opacity-70">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
+                    stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>New Chat</span>
+            </button>
+            <!-- Popup Container -->
+            <div id="popup">
+                <span id="closePopup" style="cursor: pointer; float: right; font-size: 20px;">&times;</span>
+                <form id="popupForm">
+                    <label for="inputText">New chat name:</label>
+                    <input type="text" id="inputText" name="inputText" required>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+            <style>
+                /* Popup Container Styles */
+                #popup {
+                    display: none;
+                    /* Initially hidden */
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 320px;
+                    padding: 20px;
+                    background-color: rgba(0, 0, 0, 0.9);
+                    color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                    z-index: 1000;
+                    animation: fadeIn 0.3s ease-out;
+                    transition: opacity 0.3s ease-out;
+                }
+
+                /* Close Button Styles */
+                #closePopup {
+                    cursor: pointer;
+                    float: right;
+                    font-size: 24px;
+                    margin-top: -10px;
+                    margin-right: -10px;
+                    color: #ff6666;
+                    transition: color 0.2s;
+                }
+
+                #closePopup:hover {
+                    color: #ff3333;
+                }
+
+                /* Form Input Styles */
+                #popupForm {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 15px;
+                    margin-top: 20px;
+                }
+
+                #popupForm label {
+                    font-weight: bold;
+                    font-size: 14px;
+                    margin-bottom: 5px;
+                }
+
+                #popupForm input[type="text"] {
+                    padding: 10px;
+                    font-size: 14px;
+                    border: 1px solid #ccc;
+                    color: black;
+                    border-radius: 5px;
+                    transition: border-color 0.3s;
+                }
+
+                #popupForm input[type="text"]:focus {
+                    border-color: #2196F3;
+                    outline: none;
+                }
+
+                /* Submit Button Styles */
+                #popupForm button {
+                    padding: 10px;
+                    font-size: 14px;
+                    background-color: #2196F3;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                }
+
+                #popupForm button:hover {
+                    background-color: #1e7fc8;
+                }
+
+                /* Keyframes for fade-in animation */
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translate(-50%, -50%) scale(0.9);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translate(-50%, -50%) scale(1);
+                    }
+                }
+            </style>
+            <script>
+                document.getElementById('newChatButton').addEventListener('click', function () {
+                    document.getElementById('popup').style.display = 'block';
+                });
+
+                document.getElementById('closePopup').addEventListener('click', function () {
+                    document.getElementById('popup').style.display = 'none';
+                });
+
+                document.getElementById('popupForm').addEventListener('submit', async function (event) {
+                    event.preventDefault();
+
+                    const inputText = document.getElementById('inputText').value;
+
+                    if (inputText.trim()) {
+                        try {
+                            const response = await fetch('/createNewChat', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ text: inputText })
+                            });
+
+                            const data = await response.json();
+                           // console.log('Server response:', data.message);
+                            window.location.href = '/';
+                        } catch (error) {
+                            console.error('Error:', error);
+                        }
+
+                        // Hide the popup
+                        document.getElementById('popup').style.display = 'none';
+                    } else {
+                        console.error('Input text cannot be empty.');
+                    }
+                });
+
+            </script>
+
+            <div class="text-xs m-4 mx-8 text-gray-400">Today</div>
+            <div id="chatListContainer" class="chats flex flex-col justify-center items-center space-y-2">
+            </div>
+            <script>
+                // Global variable to store the selected chat name
+                let selectedChatName = '';
+                let selectedChatDiv = null;
+                document.addEventListener('DOMContentLoaded', () => {
+                    fetch('/getChats')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.chats && data.chats.length > 0) {
+                                const chatListContainer = document.getElementById('chatListContainer');
+                                data.chats.forEach(chat => {
+                                    const chatDiv = document.createElement('div');
+                                    chatDiv.className = 'chat space-x-2 opacity-80 w-[90%] px-5 py-2 rounded-md bg-gray-600 cursor-pointer flex justify-start items-center';
+
+                                    chatDiv.innerHTML = `
+                                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
+                                            stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                        <span>${chat}</span>
+                                    `;
+
+                                    // Add click event listener to update the selected chat
+                                    chatDiv.addEventListener('click', () => {
+                                        // Update global variable and log to console
+                                        if (selectedChatDiv) {
+                                            selectedChatDiv.style.backgroundColor = "#374151"; // Reset color or original color
+                                        }
+
+                                        // Update global variable and log to console
+                                        selectedChatDiv = chatDiv;
+                                        selectedChatDiv.style.backgroundColor = "#2196F3"; // Set selected color
+
+
+                                        selectedChatName = chat;
+                                        //console.log('New chat selected:', selectedChatName);
+
+                                        // Send chat name to server and fetch chat history
+                                        fetch('/getChatHistory', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({ chatName: selectedChatName })
+                                        })
+                                            .then(response => {
+                                                // Check if response is JSON
+                                                const contentType = response.headers.get("content-type");
+                                                if (contentType && contentType.includes("application/json")) {
+                                                    return response.json();
+                                                } else {
+                                                    throw new Error("Unexpected content type: " + contentType);
+                                                }
+                                            })
+                                            .then(data => {
+                                                if (data.message === 'Success' || data.message.includes('default history')) {
+                                                    if (data.message.includes('default history')) {
+                                                        document.querySelector(".right2").style.display = "none";
+                                                        document.querySelector(".right1").style.display = "flex";
+                                                        //console.log('Chat history fetched successfully:', data.history);
+                                                        // Clear previous chat history
+                                                        const chatContainer = document.getElementById("ChatContainer");
+                                                        chatContainer.innerHTML = '';
+                                                    }
+                                                    if (data.message === 'Success') {
+                                                        document.querySelector(".right2").style.display = "flex";
+                                                        document.querySelector(".right1").style.display = "none";
+                                                        //console.log('Chat history fetched successfully:', data.history);
+
+                                                        // Clear previous chat history
+                                                        const chatContainer = document.getElementById("ChatContainer");
+                                                        chatContainer.innerHTML = '';
+
+                                                        // Convert chat history object to an array
+                                                        const chatEntries = Object.values(data.history);
+
+                                                        // Create chat history HTML elements
+                                                        chatEntries.forEach(entry => {
+                                                            const { user_message, response_message } = entry;
+
+                                                            // Define message container HTML
+                                                            const messageContainer = `
+                                                                <div style="width:90%" class="box1 m-auto py-7 flex justify-start items-center space-x-6">
+                                                                    <img class="w-9" src="https://static.vecteezy.com/system/resources/thumbnails/025/347/307/small_2x/salary-man-business-isolated-person-people-cartoon-character-flat-illustration-png.png" alt="">
+                                                                    <div id="question">${user_message}</div>
+                                                                </div>
+                                                                <div class="box2 bg-gray-600 py-7 flex justify-center w-full items-center">
+                                                                    <div style="width:90%" class="box flex justify-start space-x-6">
+                                                                        <img class="w-9 h-9" src="https://png.pngtree.com/png-vector/20240723/ourmid/pngtree-machine-learning-artificial-intelligence-png-image_12953167.png" alt="">
+                                                                        <div style="width:inherit;" class="flex space-y-4 flex-col">
+                                                                            <img style="display:none;" id="solImage" alt="image">
+                                                                            <div id="solution">${formatResponse(response_message)}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            `;
+
+                                                            // Append the message container to the chat container
+                                                            chatContainer.innerHTML += messageContainer;
+                                                        });
+                                                        scrollToBottom();
+                                                    }
+                                                } else {
+                                                    console.error('Error fetching chat history:', data.message);
+                                                }
+                                            })
+                                            .catch(error => console.error('Fetch error:', error));
+                                    });
+
+
+
+
+                                    chatListContainer.appendChild(chatDiv);
+                                });
+                            } else {
+                                const chatListContainer = document.getElementById('chatListContainer');
+                                chatListContainer.innerHTML = '<p>No chats available.</p>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching chats:', error);
+                        });
+                });
+            </script>
+
+
+
+
+
+        </div>
+
+
+        <div style="width: 100%;" class="right1 w-10/12 flex justify-center items-center flex-col">
+            <div class="text-center w-full text-4xl font-bold my-10">
+                Chat to Supercharge Your Mind
+            </div>
+            <div style="width: 100%; align-items: center;" class="itemsrow flex py-4 justify-around">
+                <div class="examples flex flex-col justify-center items-center">
+                    <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round"
+                        stroke-linejoin="round" class="h-6 w-6" height="1em" width="1em"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <div class="py-4">Examples</div>
+                    <button onclick="setInputText('Explain quantum computing in simple terms')" class="bg-gray-600  text-sm hover:bg-gray-700 py-4 px-4 mx-4  my-2 rounded-md">"Explain
+                        quantum computing in simple terms" →</button>
+                    <button onclick="setInputText('Got any creative ideas for a 10 year old’s birthday?')" class="bg-gray-600  text-sm hover:bg-gray-700 py-4 px-4 mx-4  my-2 rounded-md">"Got
+                        any creative ideas for a 10 year old’s birthday?" →</button>
+                    <button onclick="setInputText('How do I make an HTTP request in Javascript?')" class="bg-gray-600   text-sm hover:bg-gray-700 py-4 px-4 mx-4  my-2 rounded-md">"How
+                        do I make an HTTP request in Javascript?" →</button>
+                </div>
+                <div class="cap flex flex-col justify-center items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" aria-hidden="true" class="h-6 w-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"></path>
+                    </svg>
+                    <div class="py-4">Capabilities</div>
+                    <button class="bg-gray-600  text-sm hover:bg-gray-700 py-4 px-4 mx-4  my-2 rounded-md">Remembers
+                        what user said earlier in the conversation</button>
+                    <button class="bg-gray-600 text-sm hover:bg-gray-700 py-4 px-4 mx-4  my-2 rounded-md">Allows
+                        user to provide follow-up corrections</button>
+                    <button class="bg-gray-600 text-sm hover:bg-gray-700 py-4 px-4 mx-4  my-2 rounded-md">Trained
+                        to decline inappropriate requests</button>
+                </div>
+
+                <div class="lim flex flex-col justify-center items-center">
+                    <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round"
+                        stroke-linejoin="round" class="h-6 w-6" height="1em" width="1em"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                        </path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <div class="py-4">Limitations</div>
+                    <button class="bg-gray-600 text-sm hover:bg-gray-700 py-4 px-4 mx-4  my-2 rounded-md"> May
+                        occasionally generate incorrect information</button>
+                    <button class="bg-gray-600  text-sm hover:bg-gray-700 py-4 px-4 mx-4  my-2 rounded-md">May
+                        occasionally produce harmful instructions or biased content</button>
+                    <button class="bg-gray-600  text-sm hover:bg-gray-700 py-4 px-4 mx-4  my-2 rounded-md">Limited
+                        knowledge of world and events</button>
+                </div>
+            </div>
+
+            <div class="input w-full text-center my-24 flex items-center justify-center flex-col">
+                <div id="InputCont" class="buttonsvg pl-16 w-[50vw] flex">
+                    <!--
+                    <button style="margin-right: 10px;" id="imageInput" class="relative pl-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                            fill="#e8eaed">
+                            <path
+                                d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z" />
+                        </svg>
+                    </button>
+
+                     <button style="margin-right: 10px;" id="audioInput" class="relative pl-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                            fill="#e8eaed">
+                            <path
+                                d="M430-200q38 0 64-26t26-64v-150h120v-80H480v155q-11-8-23.5-11.5T430-380q-38 0-64 26t-26 64q0 38 26 64t64 26ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z" />
+                        </svg>
+                    </button>
+                    -->
+
+                    <input class="w-full p-4 bg-gray-600 rounded-md" placeholder="Send a Message" type="text"
+                        name="text" id="questionInput">
+
+                    <button id="sendButton" class="relative -left-20 pl-10">
+                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
+                            stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1" height="1em" width="1em"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <div class="text-xs py-2 pr-10 opacity-70">Gemini may display inaccurate info, including about people,
+                    so double-check its responses.<a class="underline"
+                        href="https://support.google.com/gemini?p=privacy_notice"> Your privacy and Gemini Apps</a>
+                </div>
+            </div>
+        </div>
+
+        <div style="height: auto;" class="right2 w-full flex flex-col items-center h-fit">
+            <div style="height: calc(100vh - 100px); overflow: hidden scroll; scroll-behavior: smooth; scrollbar-width: none;"
+                id="ChatContainer">
+
+            </div>
+            <div class="input w-full text-center mt-1 flex items-center justify-center flex-col">
+                <div id="InputCont" class="buttonsvg pl-16 w-[50vw] flex">
+                    <!-- Image File INput -->
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    <button style="margin-right: 10px;" id="imageInputMain" class="relative pl-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                            fill="#e8eaed">
+                            <path
+                                d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z" />
+                        </svg>
+                    </button>
+                    <!-- Audio File INput-->
+                    <input type="file" id="audiofileInput" accept="Audio/*" style="display: none;">
+                    <button style="margin-right: 10px;" id="audioInput" class="relative pl-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                            fill="#e8eaed">
+                            <path
+                                d="M430-200q38 0 64-26t26-64v-150h120v-80H480v155q-11-8-23.5-11.5T430-380q-38 0-64 26t-26 64q0 38 26 64t64 26ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z" />
+                        </svg>
+                    </button>
+
+
+                    <input id="questionInputMain" class="w-full p-4 bg-gray-600 rounded-md" placeholder="Send a Message"
+                        type="text" name="text" id="">
+
+                    <button id="sendButton2" class="relative -left-20 pl-10">
+                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
+                            stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1" height="1em" width="1em"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                    <div onclick="scrollToBottom()"
+                        style="width: 40px; height: 40px; position:fixed; right: 5px; bottom: 80px; display: flex; align-items: center; justify-content: center; cursor: pointer;     background: black;">
+                        <svg style="width: 100%; height: 100%; margin: 10px;" xmlns="http://www.w3.org/2000/svg"
+                            height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                            <path
+                                d="M160-120v-80h640v80H160Zm320-160L280-480l56-56 104 104v-408h80v408l104-104 56 56-200 200Z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <script>
+        function scrollToBottom() {
+            const chatContainer = document.getElementById("ChatContainer");
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        // Function to set text in the input field with ID 'questionInput'
+        function setInputText(text) {
+            // Get the input element by its ID
+            const inputElement = document.getElementById('questionInput');
+
+            // Set the value of the input element to the provided text
+            inputElement.value = text;
+        }
+
+    </script>
+    <script>
+        // Get the button and the hidden file input
+        const imageButton = document.getElementById('imageInputMain');
+        const fileInput = document.getElementById('fileInput');
+        let selectedFile = null;
+
+        // Add a click event listener to the button
+        imageButton.addEventListener('click', function () {
+            // Trigger the file input click
+            fileInput.click();
+        });
+
+        // Add a change event listener to handle file input change
+        fileInput.addEventListener('change', function (event) {
+            const file = event.target.files[0]; // Get the selected file
+            if (file) {
+                selectedFile = file; // Store the selected file
+               // console.log('Selected file:', file.name);
+            }
+        });
+
+
+
+
+        // Get the button and the hidden file input
+        const audioInput = document.getElementById('audioInput');
+        const audiofileInput = document.getElementById('audiofileInput');
+        let selectedAudioFile = null;
+
+        // Add a click event listener to the button
+        audioInput.addEventListener('click', function () {
+            // Trigger the file input click
+            audiofileInput.click();
+        });
+
+        // Add a change event listener to handle file input change
+        audiofileInput.addEventListener('change', function (event) {
+            const AudioFile = event.target.files[0]; // Get the selected file
+            if (AudioFile) {
+                selectedAudioFile = AudioFile; // Store the selected file
+               // console.log('Selected file:', AudioFile.name);
+            }
+        });
+
+
+
+
+
+
+        // Function to send data and file to the server with streaming response
+        async function postData(url = "", text = "", file = null, audioFile = null) {
+            const formData = new FormData();
+            formData.append('text', text);
+            if (file) {
+                formData.append('file', file);
+                //console.log("Image File Added");
+            }
+            if (audioFile) {
+                formData.append('audioFile', audioFile);
+                //console.log("Audio File Added");
+            }
+            if (selectedChatName) {
+                formData.append('selectedChatName', selectedChatName);
+                //console.log("selectedChatName Added - > " + selectedChatName);
+            }
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    console.error("HTTP error:", response.status, response.statusText);
+                    return { result: "Error: Could not get a response from the server." };
+                }
+                document.querySelector("#ChatContainer .box2:last-child #solution").innerHTML = ``;
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let receivedText = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    receivedText += decoder.decode(value, { stream: true });
+
+                    // Append the received text to the solution div
+                    document.querySelector("#ChatContainer .box2:last-child #solution").innerHTML += decoder.decode(value, { stream: true });
+                    scrollToBottom();
+                }
+
+                return { result: receivedText };
+
+            } catch (error) {
+                console.error("Network error:", error);
+                return { result: "Error: Network issue or server is down." };
+            }
+        }
+
+        const sendButton = document.getElementById("sendButton");
+        sendButton.addEventListener("click", async () => {
+            const questionInput = document.getElementById("questionInput").value.trim();
+            if (!questionInput) {
+                alert("Please enter a question.");
+                return;
+            }
+            if (!selectedChatName || selectedChatName == '') {
+                alert("Please select any chat or create a new one.");
+                return;
+            }
+
+            document.getElementById("questionInput").value = "";
+            document.querySelector(".right2").style.display = "flex";
+            document.querySelector(".right1").style.display = "none";
+
+            // Create the initial UI with the question
+            const _html = `
+        <div style="width:90%" class="box1 m-auto py-7 flex justify-start items-center space-x-6">
+            <img class="w-9" src="https://static.vecteezy.com/system/resources/thumbnails/025/347/307/small_2x/salary-man-business-isolated-person-people-cartoon-character-flat-illustration-png.png" alt="">
+            <div id="question">${questionInput}</div>
+        </div>
+        <div class="box2 bg-gray-600 py-7 flex justify-center w-full items-center">
+            <div style="width:90%" class="box flex justify-start space-x-6">
+                <img class="w-9 h-9" src="https://png.pngtree.com/png-vector/20240723/ourmid/pngtree-machine-learning-artificial-intelligence-png-image_12953167.png" alt="">
+                <div  style="width:inherit;" class="flex space-y-4 flex-col">
+                     <img id="solImage" alt="image">
+                    <div id="solution">Loading...</div>
+                </div>
+            </div>
+        </div>
+    `;
+            document.getElementById("ChatContainer").innerHTML += _html;
+
+            let result;
+            if (selectedFile) {
+                scrollToBottom();
+
+                if (selectedAudioFile) {
+                    const solImage = document.querySelector("#ChatContainer .box2:last-child #solImage");
+                    solImage.style.display = 'none';
+                    //console.log("with image Audio")
+                    result = await postData("/api", questionInput, file = selectedFile, audioFile = selectedAudioFile);
+                    selectedFile = null;  // Reset selectedFile
+                    selectedAudioFile = null;  // Reset selectedAudioFile
+                    fileInput.value = "";  // Clear file input
+                    audiofileInput.value = "";  // Clear audio input
+                    scrollToBottom();
+                    return
+                }
+               // console.log("with image");
+                // Set the selected image to the container using a URL object
+                const imageURL = URL.createObjectURL(selectedFile);
+                const solImage = document.querySelector("#ChatContainer .box2:last-child #solImage");
+                solImage.src = imageURL;
+                solImage.style.width = '50px';
+                solImage.style.display = 'block';
+                result = await postData("/api", questionInput, file = selectedFile);
+                scrollToBottom();
+
+            } else {
+                scrollToBottom();
+
+                if (selectedAudioFile) {
+                    const solImage = document.querySelector("#ChatContainer .box2:last-child #solImage");
+                    solImage.style.display = 'none';
+                    //console.log("with audio");
+                    result = await postData("/api", questionInput, file = selectedFile, audioFile = selectedAudioFile);
+                    selectedFile = null;  // Reset selectedFile
+                    selectedAudioFile = null;  // Reset selectedAudioFile
+                    fileInput.value = "";  // Clear file input
+                    audiofileInput.value = "";  // Clear audio input
+                    scrollToBottom();
+                    return
+                }
+                //console.log("no  image");
+                const solImage = document.querySelector("#ChatContainer .box2:last-child #solImage");
+                solImage.style.display = 'none';
+                result = await postData("/api", questionInput, file = selectedFile);
+                scrollToBottom();
+            }
+            // Update the response in the most recently added `solution` div
+            document.querySelector("#ChatContainer .box2:last-child #solution").innerHTML = '';
+            document.querySelector("#ChatContainer .box2:last-child #solution").innerHTML = formatResponse(result.result);
+            // Reset selectedFile after processing
+            selectedFile = null;
+            fileInput.value = ""; // Reset the file input
+            selectedAudioFile = null;
+            audiofileInput.value = ""; // Reset the audioInput input
+        });
+
+
+
+
+        const sendButton2 = document.getElementById("sendButton2");
+
+        sendButton2.addEventListener("click", async () => {
+            const questionInput = document.getElementById("questionInputMain").value.trim();
+            if (!questionInput) {
+                alert("Please enter a question.");
+                return;
+            }
+            if (!selectedChatName || selectedChatName == '') {
+                alert("Please select any chat or create a new one.");
+                return;
+            }
+
+            document.getElementById("questionInputMain").value = "";
+            document.querySelector(".right2").style.display = "flex";
+            document.querySelector(".right1").style.display = "none";
+
+            // Add the user's question to the UI with a placeholder for the response
+            const _html = `
+        <div style="width:90%" class="box1 m-auto py-7 flex justify-start items-center space-x-6">
+            <img class="w-9"
+                src="https://static.vecteezy.com/system/resources/thumbnails/025/347/307/small_2x/salary-man-business-isolated-person-people-cartoon-character-flat-illustration-png.png"
+                alt="">
+            <div id="question">${questionInput}</div>
+        </div>
+        <div class="box2 bg-gray-600 py-7 flex justify-center w-full items-center">
+            <div style="width:90%" class="box flex justify-start space-x-6">
+                <img class="w-9 h-9" src="https://png.pngtree.com/png-vector/20240723/ourmid/pngtree-machine-learning-artificial-intelligence-png-image_12953167.png" alt="">
+                <div style="width:inherit;" class="flex space-y-4 flex-col">
+                    <img id="solImage" alt="image">
+                    <div id="solution">Loading...</div>
+                </div>
+            </div>
+        </div>
+    `;
+            document.getElementById("ChatContainer").innerHTML += _html;
+            let result;
+            if (selectedFile) {
+                scrollToBottom();
+
+                if (selectedAudioFile) {
+                    const solImage = document.querySelector("#ChatContainer .box2:last-child #solImage");
+                    solImage.style.display = 'none';
+                   // console.log("with image Audio")
+                    result = await postData("/api", questionInput, file = selectedFile, audioFile = selectedAudioFile);
+                    selectedFile = null;  // Reset selectedFile
+                    selectedAudioFile = null;  // Reset selectedAudioFile
+                    fileInput.value = "";  // Clear file input
+                    audiofileInput.value = "";  // Clear audio input
+                    scrollToBottom();
+                    return
+                }
+                //console.log("with image");
+                // Set the selected image to the container using a URL object
+                const imageURL = URL.createObjectURL(selectedFile);
+                const solImage = document.querySelector("#ChatContainer .box2:last-child #solImage");
+                solImage.src = imageURL;
+                solImage.style.width = '50px';
+                solImage.style.display = 'block';
+                result = await postData("/api", questionInput, file = selectedFile);
+                scrollToBottom();
+
+            } else {
+                scrollToBottom();
+
+                if (selectedAudioFile) {
+                    const solImage = document.querySelector("#ChatContainer .box2:last-child #solImage");
+                    solImage.style.display = 'none';
+                   // console.log("with audio");
+                    result = await postData("/api", questionInput, file = selectedFile, audioFile = selectedAudioFile);
+                    selectedFile = null;  // Reset selectedFile
+                    selectedAudioFile = null;  // Reset selectedAudioFile
+                    fileInput.value = "";  // Clear file input
+                    audiofileInput.value = "";  // Clear audio input
+                    scrollToBottom();
+                    return
+                }
+                //console.log("no  image");
+                const solImage = document.querySelector("#ChatContainer .box2:last-child #solImage");
+                solImage.style.display = 'none';
+                result = await postData("/api", questionInput, file = selectedFile);
+            }
+
+            // Update the response in the most recently added `solution` div
+            document.querySelector("#ChatContainer .box2:last-child #solution").innerHTML = '';
+            document.querySelector("#ChatContainer .box2:last-child #solution").innerHTML = formatResponse(result.result);
+
+            // Reset selectedFile after processing
+            selectedFile = null;
+            fileInput.value = ""; // Reset the file input
+            selectedAudioFile = null;
+            audiofileInput.value = ""; // Reset the audioInput input
+
+            scrollToBottom();
+        });
+        // Function to format the response with HTML
+        function formatResponse(response) {
+            // Wrap code blocks with <pre> and <code> tags for proper formatting
+            return response
+                .replace(/```([^`]+)```/g, function (match, p1) {
+                    // Split the code block into lines
+                    const lines = p1.trim().split('\n');
+                    let languageLine = '';  // To store the language identifier line
+
+                    // Check if the first line is a language identifier
+                    if (lines.length > 1 && /^[a-zA-Z]+$/.test(lines[0])) {
+                        // Extract the language identifier
+                        languageLine = lines.shift(); // Removes and stores the first line
+                    }
+
+                    // Join the remaining lines and escape HTML entities
+                    const code = lines.join('\n').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                    // Return formatted HTML with the language identifier and horizontal line
+                    return `<div class="codeContainer"><div class="language-name">${languageLine}</div><pre style="overflow-x:scroll;" class="code-block"><code>${code}</code></pre></div>
+            `;
+                })
+                .replace(/`([^`]+)`/g, function (match, p1) {
+                    // Format inline code with styling and escape HTML entities
+                    return `<code class="inline-code">${p1.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>`;
+                })
+                .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")  // Bold text without asterisks
+                .replace(/\n/g, "<br>");  // Line breaks
+        }
+
+
+
+
+    </script>
+    <style>
+        .codeContainer {
+            display: flex;
+            flex-direction: column;
+            border-radius: 5px;
+            background-color: rgb(51 52 53);
+        }
+
+        /* Styling for code blocks */
+        .code-block {
+            background-color: rgb(29, 27, 27);
+            color: white;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            /* Font family for code blocks */
+            border-radius: 5px;
+            overflow-x: auto;
+            /* Allows horizontal scrolling */
+            white-space: pre;
+            /* Preserves whitespace and line breaks */
+            max-width: 100%;
+        }
+
+        /* Styling for the language name */
+        .language-name {
+            color: #ffcc00;
+            /* Bright color for language name */
+            font-weight: bold;
+            padding-bottom: 5px;
+            margin-left: 15px;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+            /* Font family for language name */
+        }
+
+        /* Styling for inline code */
+        .inline-code {
+            /* Light background for inline code */
+            color: #ffffff;
+            /* Dark text color for contrast */
+            padding: 2px 4px;
+            /* Padding around the code */
+            font-family: 'Courier New', monospace;
+            /* Font family for inline code */
+        }
+    </style>
+</body>
+
+</html>
