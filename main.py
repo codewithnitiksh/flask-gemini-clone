@@ -15,8 +15,8 @@ cred = credentials.Certificate('./serviceAccountKey.json')
 
 # Initialize the Firebase Admin SDK
 firebase_admin.initialize_app(cred, {
-    'databaseURL': "https://chatter-13894-default-rtdb.firebaseio.com",
-    'storageBucket': "chatter-13894.appspot.com"
+    'databaseURL': "",
+    'storageBucket': ""
 })
 
 
@@ -146,7 +146,7 @@ def get_chats():
 
 
 # Set the Google API key
-GOOGLE_API_KEY = "AIzaSyCi4nRDQy-7ipqzhP1Em_BOcJfxyx1hnw0"
+GOOGLE_API_KEY = ""
 
 # Configure the API key
 genai.configure(api_key=GOOGLE_API_KEY)
